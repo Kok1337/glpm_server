@@ -5,7 +5,6 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
 object ZipManager {
-
     fun zip(files: List<File>, zipFile: File) {
         ZipOutputStream(BufferedOutputStream(FileOutputStream(zipFile))).use { output ->
             files.forEach { file ->
@@ -19,5 +18,4 @@ object ZipManager {
             }
         }
     }
-
 }

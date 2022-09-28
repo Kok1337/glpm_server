@@ -1,7 +1,8 @@
 package com.kok1337.glpm.service
 
-import org.springframework.core.io.Resource
+import java.io.File
 
 interface FileService {
-    fun getFileResource(vararg fileNames: String): Resource
+    fun getFile(fileName: String): File
+    fun getZipFile(zipFileName: String, fileNameArray: Array<String>): File
 }
