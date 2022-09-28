@@ -90,9 +90,4 @@ class FileController constructor(
             .contentType(MediaType.parseMediaType("application/octet-stream"))
             .body(resource)
     }
-
-    @GetMapping("")
-    private fun index(): String {
-        return "index"
-    }
 }
