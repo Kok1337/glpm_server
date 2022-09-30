@@ -8,7 +8,7 @@ import java.io.FileNotFoundException
 
 @Service
 class FileServiceImpl constructor(
-    @Value("\${file.source-folder}") private val sourceFolder: String,
+    @Value("\${app.file.source-folder}") private val sourceFolder: String,
 ) : FileService {
     override fun getFile(fileName: String): File {
         val pathname = "${sourceFolder}\\${fileName}"

@@ -4,7 +4,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class GlpmApplication
+open class GlpmApplication
 
 fun main(args: Array<String>) {
     runApplication<GlpmApplication>(*args)

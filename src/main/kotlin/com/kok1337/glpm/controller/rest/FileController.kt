@@ -1,4 +1,4 @@
-package com.kok1337.glpm.controller
+package com.kok1337.glpm.controller.rest
 
 import com.kok1337.glpm.service.FileService
 import org.springframework.core.io.InputStreamResource
