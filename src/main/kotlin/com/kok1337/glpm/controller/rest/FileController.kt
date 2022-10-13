@@ -30,17 +30,6 @@ class FileController constructor(
         }
     }
 
-    @GetMapping("/123")
-    private fun download123File(): ResponseEntity<Resource> {
-        val fileName = "123"
-        return try {
-            val file = fileService.getFile(fileName)
-            createDownloadFileResponse(file)
-        } catch (fileNotFoundException: FileNotFoundException) {
-            ResponseEntity.noContent().build()
-        }
-    }
-
     @GetMapping("/termux-backup")
     private fun downloadTermuxBackupFile(): ResponseEntity<Resource> {
         val fileName = "termux-backup"
