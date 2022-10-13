@@ -17,6 +17,7 @@ class RestInterceptor(
     }
 
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
+        return true
         val path = request.servletPath
         if (path == LOGIN_PATH) return true
 

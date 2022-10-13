@@ -9,6 +9,7 @@ import java.io.FileNotFoundException
 @Service
 class FileServiceImpl constructor(
     @Value("\${app.file.source-folder}") private val sourceFolder: String,
+    @Value("\${app.file.zip-password}") private val zipPassword: String,
 ) : FileService {
     override fun getFile(fileName: String): File {
         val pathname = "${sourceFolder}\\${fileName}"
@@ -23,7 +24,7 @@ class FileServiceImpl constructor(
         val incorrectFiles = files.filter { file -> !file.exists() }
         if (incorrectFiles.isNotEmpty()) throw FileNotFoundException("Файлы: ${incorrectFiles.joinToString { file -> file.absolutePath }} не существуют!")
         val zipFile = File("${sourceFolder}\\${zipFileName}")
-        ZipManager.zip(files, zipFile)
+        ZipManager.zip(files, zipFile, zipPassword)
         return zipFile
     }
 }
