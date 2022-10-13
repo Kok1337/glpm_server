@@ -4,5 +4,5 @@ import java.io.File
 
 interface FileService {
     fun getFile(fileName: String): File
-    fun getZipFile(zipFileName: String, fileNameArray: Array<String>): File
+    fun buildZipFile(zipFileName: String, fileNameArray: Array<String>)
 }
