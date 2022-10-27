@@ -13,7 +13,7 @@ class TestController {
 
     @GetMapping("/123")
     private fun downloadTermuxApkFile(): ResponseEntity<Message> {
-        println("/123")
+        println("123")
         return ResponseEntity(Message("sdfgsdfgdfg"), HttpStatus.OK)
     }
 }

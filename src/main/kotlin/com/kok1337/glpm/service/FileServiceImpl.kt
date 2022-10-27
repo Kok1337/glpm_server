@@ -18,13 +18,12 @@ class FileServiceImpl constructor(
         return file
     }
 
-    override fun getZipFile(zipFileName: String, fileNameArray: Array<String>): File {
+    override fun buildZipFile(zipFileName: String, fileNameArray: Array<String>) {
         if (fileNameArray.isEmpty()) throw IllegalStateException("Отсутствуют файлы!")
         val files = fileNameArray.map { fileName -> File("${sourceFolder}\\${fileName}") }
         val incorrectFiles = files.filter { file -> !file.exists() }
         if (incorrectFiles.isNotEmpty()) throw FileNotFoundException("Файлы: ${incorrectFiles.joinToString { file -> file.absolutePath }} не существуют!")
         val zipFile = File("${sourceFolder}\\${zipFileName}")
         ZipManager.zip(files, zipFile, zipPassword)
-        return zipFile
     }
 }

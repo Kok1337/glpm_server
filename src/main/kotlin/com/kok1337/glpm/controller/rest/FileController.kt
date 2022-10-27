@@ -22,6 +22,7 @@ class FileController constructor(
     @GetMapping("/termux")
     private fun downloadTermuxApkFile(): ResponseEntity<Resource> {
         val fileName = "termux_118_glpm.apk"
+        println(fileName)
         return try {
             val file = fileService.getFile(fileName)
             createDownloadFileResponse(file)
@@ -33,6 +34,7 @@ class FileController constructor(
     @GetMapping("/termux-backup")
     private fun downloadTermuxBackupFile(): ResponseEntity<Resource> {
         val fileName = "termux-backup"
+        println(fileName)
         return try {
             val file = fileService.getFile(fileName)
             createDownloadFileResponse(file)
@@ -44,6 +46,7 @@ class FileController constructor(
     @GetMapping("/glpm_local.backup")
     private fun downloadGlpmLocalBackupFile(): ResponseEntity<Resource> {
         val fileName = "glpm_local.backup"
+        println(fileName)
         return try {
             val file = fileService.getFile(fileName)
             createDownloadFileResponse(file)
@@ -54,16 +57,22 @@ class FileController constructor(
 
     @GetMapping("/zip")
     private fun zip(): ResponseEntity<Resource> {
-        val zipFileName = "region.zip"
-        val fileNameArray = arrayOf("termux_118_glpm.apk", "termux-backup", "glpm_local.backup")
+        val fileName = "region.zip"
+        println(fileName)
         return try {
-            val file = fileService.getZipFile(zipFileName, fileNameArray)
+            val file = fileService.getFile(fileName)
             createDownloadFileResponse(file)
         } catch (fileNotFoundException: FileNotFoundException) {
             ResponseEntity.noContent().build()
         } catch (illegalStateException: IllegalStateException) {
             ResponseEntity.noContent().build()
         }
+    }
+
+    private fun buildZipFile() {
+        val zipFileName = "region.zip"
+        val fileNameArray = arrayOf("termux_118_glpm.apk", "termux-backup", "glpm_local.backup")
+        fileService.buildZipFile(zipFileName, fileNameArray)
     }
 
     private fun createDownloadFileResponse(file: File): ResponseEntity<Resource> {
@@ -73,6 +82,7 @@ class FileController constructor(
         httpHeader.add("Cache-Control", "no-cache, no-store, must-revalidate")
         httpHeader.add("Pragma", "no-cache")
         httpHeader.add("Expires", "0")
+        println("createDownloadFileResponse")
         return ResponseEntity.ok()
             .headers(httpHeader)
             .contentLength(file.length())
