@@ -1,21 +1,20 @@
 package com.kok1337.glpm.util
 
-import java.io.*
-import java.util.zip.ZipEntry
-import java.util.zip.ZipOutputStream
+import net.lingala.zip4j.ZipFile
+import net.lingala.zip4j.model.ZipParameters
+import net.lingala.zip4j.model.enums.CompressionLevel
+import net.lingala.zip4j.model.enums.EncryptionMethod
+import java.io.File
 
 object ZipManager {
-    fun zip(files: List<File>, zipFile: File) {
-        ZipOutputStream(BufferedOutputStream(FileOutputStream(zipFile))).use { output ->
-            files.forEach { file ->
-                FileInputStream(file).use { input ->
-                    BufferedInputStream(input).use { origin ->
-                        val entry = ZipEntry(file.name)
-                        output.putNextEntry(entry)
-                        origin.copyTo(output, 1024)
-                    }
-                }
-            }
-        }
+    fun zip(files: List<File>, zipFile: File, password: String) {
+        val zipParameters = ZipParameters()
+        zipParameters.isEncryptFiles = true
+        zipParameters.compressionLevel = CompressionLevel.NORMAL
+        zipParameters.encryptionMethod = EncryptionMethod.AES
+
+        val protectedZipFile = ZipFile(zipFile, password.toCharArray())
+        protectedZipFile.addFiles(files, zipParameters)
+        protectedZipFile.close()
     }
 }
