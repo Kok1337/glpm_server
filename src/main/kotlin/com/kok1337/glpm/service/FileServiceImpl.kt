@@ -3,16 +3,18 @@ package com.kok1337.glpm.service
 import com.kok1337.glpm.util.ZipManager
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import org.springframework.web.multipart.MultipartFile
 import java.io.File
 import java.io.FileNotFoundException
 
 @Service
 class FileServiceImpl constructor(
-    @Value("\${app.file.source-folder}") private val sourceFolder: String,
+    @Value("\${app.file.source-folder}") private val sourceFolderPath: String,
     @Value("\${app.file.zip-password}") private val zipPassword: String,
+    @Value("\${app.file.upload-folder}") private val uploadFolderPath: String,
 ) : FileService {
     override fun getFile(fileName: String): File {
-        val pathname = "${sourceFolder}\\${fileName}"
+        val pathname = "${sourceFolderPath}\\${fileName}"
         val file = File(pathname)
         if (!file.exists()) throw FileNotFoundException("Файл $pathname не существует!")
         return file
@@ -20,10 +22,19 @@ class FileServiceImpl constructor(
 
     override fun buildZipFile(zipFileName: String, fileNameArray: Array<String>) {
         if (fileNameArray.isEmpty()) throw IllegalStateException("Отсутствуют файлы!")
-        val files = fileNameArray.map { fileName -> File("${sourceFolder}\\${fileName}") }
+        val files = fileNameArray.map { fileName -> File("${sourceFolderPath}\\${fileName}") }
         val incorrectFiles = files.filter { file -> !file.exists() }
         if (incorrectFiles.isNotEmpty()) throw FileNotFoundException("Файлы: ${incorrectFiles.joinToString { file -> file.absolutePath }} не существуют!")
-        val zipFile = File("${sourceFolder}\\${zipFileName}")
+        val zipFile = File("${sourceFolderPath}\\${zipFileName}")
         ZipManager.zip(files, zipFile, zipPassword)
+    }
+
+    override fun uploadFile(fileName: String, file: MultipartFile): Boolean {
+        val uploadFolder = File(uploadFolderPath)
+        if (!uploadFolder.exists() && !uploadFolder.mkdirs()) return false
+        if (file.isEmpty) return false
+        val uploadFile = File(uploadFolder, fileName)
+        file.transferTo(uploadFile)
+        return true
     }
 }

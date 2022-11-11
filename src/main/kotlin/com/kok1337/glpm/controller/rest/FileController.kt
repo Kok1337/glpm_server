@@ -6,12 +6,13 @@ import org.springframework.core.io.Resource
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileNotFoundException
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 
 @RestController
@@ -57,7 +58,6 @@ class FileController constructor(
 
     @GetMapping("/zip")
     private fun zip(): ResponseEntity<Resource> {
-//        buildZipFile()
         val fileName = "region.zip"
         println(fileName)
         return try {
@@ -70,10 +70,22 @@ class FileController constructor(
         }
     }
 
+    @PostMapping("/build")
     private fun buildZipFile() {
         val zipFileName = "region.zip"
         val fileNameArray = arrayOf("termux_118_glpm.apk", "termux-backup.tar.gz", "glpm_local.backup")
         fileService.buildZipFile(zipFileName, fileNameArray)
+    }
+
+    // HEADER: Content-Type multipart/form-data
+    // BODY: file FILE
+    @PostMapping("/upload")
+    private fun uploadBackup(@RequestParam("file") file: MultipartFile): ResponseEntity<*> {
+        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")
+        val filename = LocalDateTime.now().format(dateFormatter) + ".backup"
+        val isSuccess = fileService.uploadFile(filename, file)
+        return if (isSuccess) ResponseEntity.ok("File uploaded successfully.")
+        else ResponseEntity.internalServerError().body("File upload failed")
     }
 
     private fun createDownloadFileResponse(file: File): ResponseEntity<Resource> {
