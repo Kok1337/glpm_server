@@ -44,6 +44,18 @@ class FileController constructor(
         }
     }
 
+    @GetMapping("/download")
+    private fun download(): ResponseEntity<Resource> {
+        return try {
+            val file = fileService.getBackup()
+            createDownloadFileResponse(file)
+        } catch (fileException: Exception) {
+            ResponseEntity.noContent().build()
+        }
+    }
+
+
+
     @GetMapping("/glpm_local.backup")
     private fun downloadGlpmLocalBackupFile(): ResponseEntity<Resource> {
         val fileName = "glpm_local.backup"
@@ -81,8 +93,9 @@ class FileController constructor(
     // BODY: file FILE
     @PostMapping("/upload")
     private fun uploadBackup(@RequestParam("file") file: MultipartFile): ResponseEntity<*> {
-        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")
-        val filename = LocalDateTime.now().format(dateFormatter) + ".backup"
+//        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")
+//        val filename = LocalDateTime.now().format(dateFormatter) + ".backup"
+        val filename = "change_in.backup"
         val isSuccess = fileService.uploadFile(filename, file)
         return if (isSuccess) ResponseEntity.ok("File uploaded successfully.")
         else ResponseEntity.internalServerError().body("File upload failed")

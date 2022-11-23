@@ -12,6 +12,7 @@ class FileServiceImpl constructor(
     @Value("\${app.file.source-folder}") private val sourceFolderPath: String,
     @Value("\${app.file.zip-password}") private val zipPassword: String,
     @Value("\${app.file.upload-folder}") private val uploadFolderPath: String,
+    @Value("\${app.file.download-folder}") private val downloadFolderPath: String,
 ) : FileService {
     override fun getFile(fileName: String): File {
         val pathname = "${sourceFolderPath}\\${fileName}"
@@ -36,5 +37,15 @@ class FileServiceImpl constructor(
         val uploadFile = File(uploadFolder, fileName)
         file.transferTo(uploadFile)
         return true
+    }
+
+    override fun getBackup(): File {
+        val folder = File(downloadFolderPath)
+        if (!folder.exists() || !folder.isDirectory) throw IllegalStateException("Папка не существует!")
+        val filename = folder.list()?.first { filename -> filename.contains(".backup") }
+            ?: throw IllegalStateException("Backup не существует!")
+        val backup = File(folder, filename)
+        if (!backup.isFile || backup.length() == 0L) throw IllegalStateException("Backup не существует!")
+        return backup
     }
 }

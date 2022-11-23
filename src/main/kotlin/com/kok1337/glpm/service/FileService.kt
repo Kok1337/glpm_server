@@ -7,4 +7,5 @@ interface FileService {
     fun getFile(fileName: String): File
     fun buildZipFile(zipFileName: String, fileNameArray: Array<String>)
     fun uploadFile(fileName: String, file: MultipartFile): Boolean
+    fun getBackup(): File
 }
