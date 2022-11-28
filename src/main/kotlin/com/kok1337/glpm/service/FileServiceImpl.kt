@@ -42,44 +42,34 @@ class FileServiceImpl constructor(
         file.transferTo(uploadFile)
         val userId = 2
         val outputFileName = "change_out$userId.backup"
-        val command =
-            "powershell.exe \"$loadChangesScript $userId '${uploadFolder.absolutePath}\\' '${uploadFile.name}' '$downloadFolderPath\\' '$outputFileName'\""
-        println(command)
-
-        val cmd = "\"C:\\Users\\bas\\AppData\\Local\\Programs\\pgAdmin 4\\v6\\runtime\\pg_dump.exe\" --file \"C:\\Users\\bas\\Desktop\\server_files\\out\\123.backup\" --lock-wait-timeout 2 --no-sync --host \"172.16.24.199\" --port \"5432\" --format=p --schema=\"glpm\" --username \"postgres\" --no-password   --verbose --blobs \"glpm_for_plan\""
 
         val arrCom = listOf(
-            "powershell.exe",
-            "-noexit",
-            "\"$loadChangesScript $userId '${uploadFolder.absolutePath}\\' '${uploadFile.name}' '$downloadFolderPath\\' '$outputFileName'\""
+            loadChangesScript,
+            userId.toString(),
+            uploadFolder.absolutePath,
+            uploadFile.name,
+            downloadFolderPath,
+            outputFileName,
         )
-//        val arrCom = listOf(cmd)
-        val processBuilder = ProcessBuilder()
-        processBuilder.command(arrCom)
 
+        println(arrCom.joinToString(" "))
+
+        val runtimeProcess: Process
         try {
-            val process = processBuilder.start()
-            BufferedReader(InputStreamReader(process.inputStream)).use { buf ->
-                var line = buf.readLine()
-                while (line != null) {
-                    println(line)
-                    line = buf.readLine()
-                }
-            }
+            val pb = ProcessBuilder(arrCom)
+            pb.redirectOutput(ProcessBuilder.Redirect.INHERIT)
+            pb.redirectError(ProcessBuilder.Redirect.INHERIT)
+            runtimeProcess = pb.start()
+            val processComplete = runtimeProcess.waitFor()
 
-            BufferedReader(InputStreamReader(process.errorStream)).use { buf ->
-                var line = buf.readLine()
-                while (line != null) {
-                    println(line)
-                    line = buf.readLine()
-                }
+            if (processComplete == 0) {
+                println("Backup created successfully")
+            } else {
+                println("Could not create the backup")
             }
-        } catch (exception: Exception) {
-            exception.printStackTrace()
+        } catch (ex: Exception) {
+            ex.printStackTrace()
         }
-
-//        Runtime.getRuntime().exec(cmd)
-
         return true
     }
 
@@ -93,20 +83,3 @@ class FileServiceImpl constructor(
         return backup
     }
 }
-
-//            val task = ProcessReader(process.inputStream)
-//            val future: Future<List<String>> = pool.submit(task) as Future<List<String>>
-//            val results = future.get()
-//            results.forEach {
-//                println(it)
-//            }
-
-//            val exitCode = process.waitFor()
-//
-//            if (exitCode != 0) {
-//                val platformMessages = """
-//                ${String(BufferedInputStream(process.inputStream).readAllBytes(), Charset.defaultCharset())}
-//                ${String(BufferedInputStream(process.errorStream).readAllBytes(), Charset.defaultCharset())}
-//            """.trimIndent().trim()
-//                println(platformMessages)
-//            }
